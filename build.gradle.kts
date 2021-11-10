@@ -1,12 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("multiplatform") version "1.5.31"
     kotlin("kapt") version "1.5.31"
-    kotlin("jvm") version "1.5.31"
 }
-group = "me.nuckolp"
-version = "0.1-SNAPSHOT"
+
+group = "me.pen"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -17,14 +15,14 @@ kotlin {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
         }
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
     }
-    js {
+    js(LEGACY) {
         browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
-                }
+            commonWebpackConfig {
+                cssSupport.enabled = true
             }
         }
     }
@@ -49,34 +47,14 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(kotlin("test"))
             }
         }
         val jvmMain by getting
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit5"))
-            }
-        }
+        val jvmTest by getting
         val jsMain by getting
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
+        val jsTest by getting
         val nativeMain by getting
         val nativeTest by getting
     }
-}
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
 }
